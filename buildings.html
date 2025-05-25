@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+
+<html lang="cs">
+
+<head>
+
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Budovy a Vojáci</title>
+
+<style>
+
+  body {
+
+    margin:0; font-family: Arial, sans-serif; background: #f4f1e6;
+
+  }
+
+  header {
+
+    background:#333; color:#fff; padding:10px;
+
+    display:flex; justify-content: space-between; align-items:center;
+
+  }
+
+  nav a {
+
+    color:#fff; text-decoration:none; margin:0 10px; padding:5px 10px;
+
+    border-radius:5px; cursor:pointer;
+
+  }
+
+  nav a:hover {
+
+    background:#555;
+
+  }
+
+  .resources {
+
+    display:flex; justify-content:space-around; background:#e8e4d8;
+
+    padding:10px; font-weight:bold; margin-top:5px;
+
+  }
+
+  .resources div {
+
+    min-width:90px; text-align:center;
+
+  }
+
+  /* Přidaný token */
+
+  .resources .token {
+
+    color: purple;
+
+  }
+
+  #tabs {
+
+    display:flex; justify-content:center; margin-top: 15px;
+
+    gap: 15px;
+
+  }
+
+  #tabs button {
+
+    padding:8px 20px; font-weight:bold; font-size:16px;
+
+    border:none; border-radius:10px; cursor:pointer;
+
+    background:#c4a76d; color:#fff; transition: background 0.3s ease;
+
+  }
+
+  #tabs button.active {
+
+    background:#a78e4a;
+
+  }
+
+  #tabs button:hover:not(.active) {
+
+    background:#b7a561;
+
+  }
+
+  .tab-content {
+
+    max-width: 900px; margin: 20px auto; background:#fff9e6;
+
+    border: 2px solid #c4a76d; border-radius:15px; padding: 20px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+  }
+
+  .building-card, .unit-card, .research-card {
+
+    background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);
+
+    padding:15px; margin-bottom:15px; display:flex; align-items:center;
+
+    gap:15px; user-select:none;
+
+  }
+
+  .building-card.inactive, .unit-card.inactive, .research-card.inactive {
+
+    filter: grayscale(100%); opacity:0.4; cursor:default;
+
+    position: relative;
+
+  }
+
+  .building-card.inactive::after, .unit-card.inactive::after, .research-card.inactive::after {
+
+    content: "Zamčeno";
+
+    position: absolute; right: 15px; top: 15px;
+
+    font-weight: bold; color: #a33; font-size: 14px;
+
+  }
+
+  .icon {
+
+    font-size: 48px; width:60px; text-align:center;
+
+  }
+
+  .details {
+
+    flex-grow:1;
+
+  }
+
+  .title {
+
+    font-weight: bold; font-size: 18px; margin-bottom: 5px;
+
+  }
+
+  .level {
+
+    margin-bottom: 5px;
+
+  }
+
+  .btn {
+
+    background:#c4a76d; border:none; border-radius:8px;
+
+    color:#fff; font-weight:bold; padding: 8px 15px;
+
+    cursor:pointer; transition: background 0.3s ease;
+
+  }
+
+  .btn:disabled {
+
+    background:#aaa; cursor:not-allowed;
+
+  }
+
+  .btn:hover:not(:disabled) {
+
+    background:#a78e4a;
+
+  }
+
+  .timer {
+
+    font-family: monospace; color: #a33; font-weight: bold;
+
+  }
+
+  #army-list {
+
+    display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;
+
+  }
+
+  .army-unit {
+
+    background:#fff; border-radius:10px; box-shadow:0 0 8px rgba(0,0,0,0.15);
+
+    width: 120px; padding:10px; text-align:center;
+
+    user-select:none; position: relative;
+
+  }
+
+  .army-unit .icon {
+
+    font-size: 40px;
+
+  }
+
+  .army-unit .count {
+
+    font-weight:bold; font-size: 18px; margin-top: 8px;
+
+  }
+
+  #research-list, #training-list, #training-stable-list {
+
+    max-height: 300px; overflow-y: auto;
+
+  }
+
+  #speedUpBuildingsContainer {
+
+    max-width: 900px;
+
+    margin: 20px auto 40px;
+
+    background: #fff9e6;
+
+    border: 2px solid #c4a76d;
+
+    border-radius: 15px;
+
+    padding: 15px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+    text-align: center;
+
+  }
+
+  #speedUpBuildingsBtn {
+
+    padding: 10px 25px;
+
+    background: #c4a76d;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    font-size: 16px;
+
+    transition: background-color 0.3s ease;
+
+  }
+
+  #speedUpBuildingsBtn:disabled {
+
+    background: #999;
+
+    cursor: not-allowed;
+
+  }
+
+  #speedUpBuildingsBtn:hover:not(:disabled) {
+
+    background-color: #a78e4a;
+
+  }
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header>
+
+  <nav>
+
+    <a href="index.html">Pole</a>
+
+    <a href="buildings.html">Budovy</a>
+
+    <a href="#">Statistiky</a>
+
+    <a href="#">Zprávy</a>
+
+  </nav>
+
+</header>
+
+
+
+<div class="resources">
+
+  <div style="color:brown;">Dřevo: <span id="wood">0</span>/8000</div>
+
+  <div style="color:red;">Hlína: <span id="clay">0</span>/8000</div>
+
+  <div style="color:blue;">Železo: <span id="iron">0</span>/8000</div>
+
+  <div style="color:goldenrod;">Obilí: <span id="grain">0</span>/8000</div>
+
+  <div class="token" style="color:purple;">Tokeny: <span id="tokens">0</span></div>
+
+</div>
+
+
+
+<div id="tabs">
+
+  <button class="tab-btn active" data-tab="buildings">Budovy</button>
+
+  <button class="tab-btn" data-tab="barracks">Kasárna</button>
+
+  <button class="tab-btn" data-tab="stable">Stáje</button>
+
+  <button class="tab-btn" data-tab="academy">Akademie</button>
+
+  <button class="tab-btn" data-tab="rally">Shromaždiště</button>
+
+</div>
+
+
+
+<div id="tab-buildings" class="tab-content">
+
+  <!-- Seznam budov -->
+
+</div>
+
+
+
+<div id="speedUpBuildingsContainer">
+
+  <button id="speedUpBuildingsBtn" onclick="speedUpBuildings()">Urychlit všechny stavby budov za 20 tokenů za každou</button>
+
+  <div id="speedUpStatus" style="margin-top: 10px; font-weight: bold; color: green;"></div>
+
+</div>
+
+
+
+<div id="tab-barracks" class="tab-content" style="display:none;">
+
+  <h2>Trénink jednotek v kasárnách</h2>
+
+  <div id="training-list"></div>
+
+</div>
+
+
+
+<div id="tab-stable" class="tab-content" style="display:none;">
+
+  <h2>Trénink jezdců ve stájích</h2>
+
+  <div id="training-stable-list"></div>
+
+</div>
+
+
+
+<div id="tab-academy" class="tab-content" style="display:none;">
+
+  <h2>Výzkum v akademii</h2>
+
+  <div id="research-list"></div>
+
+</div>
+
+
+
+<div id="tab-rally" class="tab-content" style="display:none;">
+
+  <h2>Shromaždiště - přehled armády</h2>
+
+  <div id="army-list"></div>
+
+</div>
+
+
+
+<script>
+
+  // Zdroje
+
+  let floatResources = { wood: 500, clay: 500, iron: 500, grain: 500 };
+
+  let tokens = 100;
+
+
+
+  // Budovy
+
+  const buildingsList = [
+
+    { id: 'main', name: "Hlavní budova", icon: "🏰" },
+
+    { id: 'granary', name: "Sýpka", icon: "🌾" },
+
+    { id: 'warehouse', name: "Sklad", icon: "🏠" },
+
+    { id: 'barracks', name: "Kasárna", icon: "🪖" },
+
+    { id: 'rally', name: "Shromaždiště", icon: "🛡️" },
+
+    { id: 'stable', name: "Stáje", icon: "🐴" },
+
+    { id: 'workshop', name: "Dílna", icon: "🔧" },
+
+    { id: 'academy', name: "Akademie", icon: "🎓" },
+
+    { id: 'market', name: "Tržnice", icon: "🏪" },
+
+  ];
+
+
+
+  const baseCostsBuildings = {
+
+    main:   { wood: 100, clay: 80, iron: 90, grain: 70, time: 20 },
+
+    granary:{ wood: 60, clay: 40, iron: 50, grain: 30, time: 10 },
+
+    warehouse:{ wood: 70, clay: 50, iron: 60, grain: 40, time: 10 },
+
+    barracks:{ wood: 150, clay: 130, iron: 120, grain: 110, time: 30 },
+
+    rally:  { wood: 120, clay: 100, iron: 90, grain: 80, time: 25 },
+
+    stable: { wood: 160, clay: 140, iron: 130, grain: 120, time: 35 },
+
+    workshop:{ wood: 200, clay: 180, iron: 170, grain: 150, time: 40 },
+
+    academy:{ wood: 220, clay: 200, iron: 180, grain: 170, time: 45 },
+
+    market: { wood: 100, clay: 90, iron: 80, grain: 70, time: 15 },
+
+  };
+
+
+
+  // Jednotky definice
+
+  const unitsList = {
+
+    barracks: [
+
+      { id: 'palkar', name: 'Pěšák (Palkar)', icon: '🛡️', attack: 40, defense: 40, defInfantry:40, defCavalry:10,
+
+        requiredBuildingLevel: 1, researched: true, trainingTime: 2, grainPerHour: 1 },
+
+      { id: 'sekyrnik', name: 'Sekyrník', icon: '🪓', attack: 60, defense: 60, defInfantry:40, defCavalry:40,
+
+        requiredBuildingLevel: 3, researched: false, trainingTime: 3, grainPerHour: 1 },
+
+      { id: 'ostepar', name: 'Ostepar', icon: '🦵', attack: 20, defense: 20, defInfantry:30, defCavalry:70,
+
+        requiredBuildingLevel: 3, researched: false, trainingTime: 3, grainPerHour: 1 },
+
+    ],
+
+    stable: [
+
+      { id: 'kun_tueton', name: 'Kůň Tueton', icon: '🐴', attack: 120, defense: 120, defInfantry:60, defCavalry:70,
+
+        requiredBuildingLevel: 10, researched: false, trainingTime: 5, grainPerHour: 2 },
+
+      { id: 'rytíř', name: 'Rytíř', icon: '🏇', attack: 70, defense: 110, defInfantry:70, defCavalry:70,
+
+        requiredBuildingLevel: 10, researched: false, trainingTime: 6, grainPerHour: 2 },
+
+    ],
+
+  };
+
+
+
+  // Výzkumy v akademii
+
+  const researchList = [
+
+    { id: 'sekyrnik', name: 'Výzkum Sekyrníka', time: 5, buildingReq: 5, buildingId: 'academy', unlocksUnit: 'sekyrnik' },
+
+    { id: 'ostepar', name: 'Výzkum Ostepara', time: 6, buildingReq: 5, buildingId: 'academy', unlocksUnit: 'ostepar' },
+
+    { id: 'kun_tueton', name: 'Výzkum Kůň Tueton', time: 10, buildingReq: 10, buildingId: 'academy', unlocksUnit: 'kun_tueton' },
+
+    { id: 'rytíř', name: 'Výzkum Rytíře', time: 12, buildingReq: 10, buildingId: 'academy', unlocksUnit: 'rytíř' },
+
+  ];
+
+
+
+  // Data z localStorage
+
+  let buildingData = {};
+
+  let armyData = {};
+
+  let researchData = {};
+
+  let trainingQueue = {};
+
+  let researchQueue = {};
+
+
+
+  // --- Načtení dat ---
+
+  function loadFromStorage() {
+
+    const bData = localStorage.getItem('buildingData');
+
+    const aData = localStorage.getItem('armyData');
+
+    const rData = localStorage.getItem('researchData');
+
+    const tData = localStorage.getItem('trainingQueue');
+
+    const resData = localStorage.getItem('researchQueue');
+
+    const rTokens = localStorage.getItem('tokens');
+
+    const rRes = localStorage.getItem('resources');
+
+
+
+    buildingData = bData ? JSON.parse(bData) : {};
+
+    armyData = aData ? JSON.parse(aData) : {};
+
+    researchData = rData ? JSON.parse(rData) : {};
+
+    trainingQueue = tData ? JSON.parse(tData) : {};
+
+    researchQueue = resData ? JSON.parse(resData) : {};
+
+    tokens = rTokens !== null ? parseInt(rTokens) : 100;
+
+    floatResources = rRes ? JSON.parse(rRes) : { wood: 500, clay: 500, iron: 500, grain: 500 };
+
+
+
+    buildingsList.forEach(b => {
+
+      if (!buildingData[b.id]) {
+
+        buildingData[b.id] = { level: b.id === 'main' ? 1 : 0, built: b.id === 'main', upgrading: false, upgradeEnd: null };
+
+      }
+
+    });
+
+
+
+    Object.values(unitsList).flat().forEach(u => {
+
+      if (armyData[u.id] === undefined) armyData[u.id] = 0;
+
+      if (researchData[u.id] === undefined) researchData[u.id] = u.researched;
+
+    });
+
+
+
+    Object.keys(trainingQueue).forEach(k => {
+
+      if (!Array.isArray(trainingQueue[k])) trainingQueue[k] = [];
+
+    });
+
+    Object.keys(researchQueue).forEach(k => {
+
+      if (!researchQueue[k]) researchQueue[k] = null;
+
+    });
+
+  }
+
+
+
+  // --- Uložení dat ---
+
+  function saveToStorage() {
+
+    localStorage.setItem('buildingData', JSON.stringify(buildingData));
+
+    localStorage.setItem('armyData', JSON.stringify(armyData));
+
+    localStorage.setItem('researchData', JSON.stringify(researchData));
+
+    localStorage.setItem('trainingQueue', JSON.stringify(trainingQueue));
+
+    localStorage.setItem('researchQueue', JSON.stringify(researchQueue));
+
+    localStorage.setItem('tokens', tokens);
+
+    localStorage.setItem('resources', JSON.stringify(floatResources));
+
+  }
+
+
+
+  // --- Aktualizace zobrazení tokenů ---
+
+  function updateTokensDisplay() {
+
+    document.getElementById('tokens').textContent = tokens;
+
+  }
+
+
+
+  // --- Formát času ---
+
+  function formatTime(ms) {
+
+    if (ms <= 0) return "0:00";
+
+    const totalSec = Math.ceil(ms / 1000);
+
+    const min = Math.floor(totalSec / 60);
+
+    const sec = totalSec % 60;
+
+    return `${min}:${sec.toString().padStart(2,"0")}`;
+
+  }
+
+
+
+  // --- Rychlost upgradu ---
+
+  function getSpeedMultiplier() {
+
+    const lvl = buildingData.main ? buildingData.main.level : 1;
+
+    return 1 + (lvl -1) * 0.1;
+
+  }
+
+
+
+  // --- Odemčení budovy ---
+
+  
+
+
+
+  // --- Výpočet ceny upgradu ---
+
+  function calculateBuildingCost(level, id) {
+
+    const base = baseCostsBuildings[id];
+
+    const multiplier = level + 1;
+
+    return {
+
+      wood: base.wood * multiplier,
+
+      clay: base.clay * multiplier,
+
+      iron: base.iron * multiplier,
+
+      grain: base.grain * multiplier,
+
+      time: base.time * multiplier
+
+    };
+
+  }
+
+
+
+  // --- Aktualizace zobrazení zdrojů ---
+
+  function updateResourcesDisplay() {
+
+  const baseCap = 8000;
+
+  const warehouseLvl = buildingData.warehouse?.level || 0;
+
+  const granaryLvl = buildingData.granary?.level || 0;
+
+  const woodCap = baseCap + warehouseLvl * 2000;
+
+  const clayCap = baseCap + warehouseLvl * 2000;
+
+  const ironCap = baseCap + warehouseLvl * 2000;
+
+  const grainCap = baseCap + granaryLvl * 2000;
+
+  document.getElementById('wood').parentElement.innerHTML = `Dřevo: <span id="wood">${Math.floor(floatResources.wood)}</span>/${woodCap}`;
+
+  document.getElementById('clay').parentElement.innerHTML = `Hlína: <span id="clay">${Math.floor(floatResources.clay)}</span>/${clayCap}`;
+
+  document.getElementById('iron').parentElement.innerHTML = `Železo: <span id="iron">${Math.floor(floatResources.iron)}</span>/${ironCap}`;
+
+  document.getElementById('grain').parentElement.innerHTML = `Obilí: <span id="grain">${Math.floor(floatResources.grain)}</span>/${grainCap}`;
+
+  }
+
+
+
+  // --- Kontrola, zda si může hráč dovolit ---
+
+  function canAfford(cost) {
+
+    return (
+
+      floatResources.wood >= cost.wood &&
+
+      floatResources.clay >= cost.clay &&
+
+      floatResources.iron >= cost.iron &&
+
+      floatResources.grain >= cost.grain
+
+    );
+
+  }
+
+
+
+  // --- Odečtení zdrojů ---
+
+  function payCost(cost) {
+
+    floatResources.wood -= cost.wood;
+
+    floatResources.clay -= cost.clay;
+
+    floatResources.iron -= cost.iron;
+
+    floatResources.grain -= cost.grain;
+
+  }
+
+
+
+  // --- Vykreslení budov ---
+
+
+  function startTrainingUnit(unitId) {
+    const unit = Object.values(unitsList).flat().find(u => u.id === unitId);
+    if (!unit) return;
+
+    // Spotřeba obilí během tréninku
+    const grainNeeded = unit.grainPerHour / 60 * unit.trainingTime;
+    if (floatResources.grain < grainNeeded) {
+      alert("Nemáš dostatek obilí na trénink.");
+      return;
+    }
+
+    floatResources.grain -= grainNeeded;
+    updateResourcesDisplay();
+
+    if (!trainingQueue[unitId]) trainingQueue[unitId] = [];
+    const endTime = Date.now() + unit.trainingTime * 60 * 1000;
+    trainingQueue[unitId].push({ count: 1, endTime });
+
+    saveToStorage();
+    renderTraining('barracks'); // Update the training display
+  }
+
+  // --- Zobrazení tréninkových jednotek ---
+  function renderTraining(buildingId) {
+    let listId = buildingId === 'barracks' ? 'training-list' : 'training-stable-list';
+    const container = document.getElementById(listId);
+    container.innerHTML = '';
+
+    const units = unitsList[buildingId] || [];
+    units.forEach(u => {
+      const unlocked = isUnlockedForTraining(buildingId) && isUnitUnlocked(u);
+      const div = document.createElement('div');
+      div.className = 'unit-card' + (unlocked ? '' : ' inactive');
+
+      const icon = document.createElement('div');
+      icon.className = 'icon';
+      icon.textContent = u.icon;
+
+      const details = document.createElement('div');
+      details.className = 'details';
+
+      const title = document.createElement('div');
+      title.className = 'title';
+      title.textContent = u.name;
+
+      const lvlReq = document.createElement('div');
+      lvlReq.textContent = `Vyžaduje level budovy: ${u.requiredBuildingLevel}`;
+
+      const stats = document.createElement('div');
+      stats.innerHTML = `
+        Útok: ${u.attack} | Obrana: ${u.defense} <br />
+        Obrana proti pěchotě: ${u.defInfantry} | Obrana proti koním: ${u.defCavalry} <br />
+        Spotřeba obilí: ${u.grainPerHour} / hodina <br />
+        Trénink trvá: ${u.trainingTime} min
+      `;
+
+      const count = document.createElement('div');
+      count.textContent = `Počet: ${armyData[u.id] || 0}`;
+
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.textContent = unlocked ? 'Trénovat 1' : 'Uzamčeno';
+      btn.disabled = !unlocked || (trainingQueue[u.id] && trainingQueue[u.id].some(t => Date.now() < t.endTime));
+      btn.onclick = () => startTrainingUnit(u.id);
+
+      details.appendChild(title);
+      details.appendChild(lvlReq);
+      details.appendChild(stats);
+      details.appendChild(count);
+      details.appendChild(btn);
+
+      div.appendChild(icon);
+      div.appendChild(details);
+
+      container.appendChild(div);
+    });
+  }
+
+  // --- Zpracování fronty trénování ---
+  function processTrainingQueue() {
+    const now = Date.now();
+    let changed = false;
+    for (const unitId in trainingQueue) {
+      const queue = trainingQueue[unitId];
+      if (!queue) continue;
+      for (let i = queue.length - 1; i >= 0; i--) {
+        if (queue[i].endTime <= now) {
+          armyData[unitId] = (armyData[unitId] || 0) + queue[i].count;
+          queue.splice(i,1);
+          changed = true;
+        }
+      }
+      if (queue.length === 0) delete trainingQueue[unitId];
+    }
+    if (changed) {
+      saveToStorage();
+      renderTraining('barracks');
+      renderTraining('stable');
+      renderArmyList();
+    }
+  }
+
+  function renderBuildings() {
+
+    const container = document.getElementById('tab-buildings');
+
+    container.innerHTML = '<h2>Seznam budov</h2>';
+
+    buildingsList.forEach(b => {
+
+      const data = buildingData[b.id];
+
+      const unlocked = isUnlockedBuilding(b.id);
+
+      const div = document.createElement('div');
+
+      div.className = 'building-card' + (unlocked ? '' : ' inactive');
+
+      if (data && data.upgrading) div.classList.add('inactive');
+
+
+
+      const icon = document.createElement('div');
+
+      icon.className = 'icon';
+
+      icon.textContent = b.icon;
+
+
+
+      const details = document.createElement('div');
+
+      details.className = 'details';
+
+
+
+      const title = document.createElement('div');
+
+      title.className = 'title';
+
+      title.textContent = b.name;
+
+
+
+      const level = document.createElement('div');
+
+      level.className = 'level';
+
+      level.textContent = data && data.level > 0 ? `Úroveň: ${data.level}` : "Nepostaveno";
+
+
+
+      const btn = document.createElement('button');
+
+      btn.className = 'btn';
+
+      btn.textContent = data && data.upgrading ? "Upgraduje se..." : "Vylepšit";
+
+
+
+                if (!unlocked) {
+
+                    div.classList.add('inactive');
+
+                    btn.disabled = true;
+
+                } else {
+
+                    div.classList.remove('inactive');
+
+                    btn.disabled = false;
+
+                }
+
+                
+
+      btn.onclick = () => startBuildingUpgrade(b.id);
+
+
+
+      const timer = document.createElement('div');
+
+      timer.className = 'timer';
+
+      if (data && data.upgrading && data.upgradeEnd) {
+
+        timer.textContent = "Zbývá: " + formatTime(data.upgradeEnd - Date.now());
+
+      }
+
+
+
+      details.appendChild(title);
+
+      details.appendChild(level);
+
+      details.appendChild(btn);
+
+      details.appendChild(timer);
+
+
+
+      div.appendChild(icon);
+
+      div.appendChild(details);
+
+
+
+      container.appendChild(div);
+
+    });
+
+  }
+
+
+
+  // --- Start upgradu budovy ---
+
+  function startBuildingUpgrade(id) {
+
+    const data = buildingData[id];
+
+    if (data.upgrading) {
+
+  if ((id === 'granary' || id === 'warehouse') && buildingData.main.level < 3) {
+
+    alert("Musíš mít hlavní budovu na levelu 3.");
+
+    return;
+
+  }
+
+      alert("Budova se již vylepšuje.");
+
+      return;
+
+    }
+
+    const cost = calculateBuildingCost(data.level, id);
+
+    if (!canAfford(cost)) {
+
+      alert("Nemáš dostatek zdrojů na vylepšení.");
+
+      return;
+
+    }
+
+    payCost(cost);
+
+    updateResourcesDisplay();
+
+
+
+    const speed = getSpeedMultiplier();
+
+    const durationMs = (cost.time * 60 * 1000) / speed;
+
+
+
+    data.upgrading = true;
+
+    data.upgradeEnd = Date.now() + durationMs;
+
+    saveToStorage();
+
+    renderBuildings();
+
+  }
+
+
+
+  // --- Urychlení budov tokeny ---
+
+  function speedUpBuildings() {
+
+    const now = Date.now();
+
+    const upgradingBuildings = Object.entries(buildingData).filter(([id, b]) => b.upgrading && b.upgradeEnd > now);
+
+
+
+    if (upgradingBuildings.length === 0) {
+
+      alert("Žádné probíhající stavby k urychlení.");
+
+      return;
+
+    }
+
+
+
+    const costPerBuilding = 20;
+
+    const totalCost = upgradingBuildings.length * costPerBuilding;
+
+
+
+    if (tokens < totalCost) {
+
+      alert(`Nemáš dostatek tokenů. Potřebuješ ${totalCost} tokenů, máš ${tokens}.`);
+
+      return;
+
+    }
+
+
+
+    tokens -= totalCost;
+
+
+
+    // Dokončit všechny stavby najednou
+
+    upgradingBuildings.forEach(([id, b]) => {
+
+      b.level++;
+
+      b.upgrading = false;
+
+      b.upgradeEnd = null;
+
+    });
+
+
+
+    saveToStorage();
+
+    renderBuildings();
+
+    updateResourcesDisplay();
+
+    updateTokensDisplay();
+
+
+
+    const statusDiv = document.getElementById('speedUpStatus');
+
+    statusDiv.textContent = `Urychleno ${upgradingBuildings.length} staveb za ${totalCost} tokenů.`;
+
+    setTimeout(() => { statusDiv.textContent = ''; }, 5000);
+
+  }
+
+
+
+  // --- Podmínky odemčení budov pro trénink ---
+
+  function isUnlockedForTraining(buildingId) {
+
+    if (buildingId === 'barracks') {
+
+      return buildingData.barracks && buildingData.barracks.level >= 1;
+
+    }
+
+    if (buildingId === 'stable') {
+
+      return buildingData.stable && buildingData.stable.level >= 10 &&
+
+             buildingData.academy && buildingData.academy.level >= 10;
+
+    }
+
+    return false;
+
+  }
+
+
+
+  // --- Podmínka, zda je jednotka odemčena výzkumem ---
+
+  function isUnitUnlocked(unit) {
+
+
+  if (id === 'stable') {
+    return buildingData.barracks && buildingData.barracks.level >= 10;
+  }
+
+    if (unit.researched) return true;
+
+    return researchData[unit.id] === true;
+
+  }
+
+
+
+  // --- Vykreslení jednotek v kasárnách nebo stájích ---
+
+  function renderTraining(buildingId) {
+
+    let listId = buildingId === 'barracks' ? 'training-list' : 'training-stable-list';
+
+    const container = document.getElementById(listId);
+
+    container.innerHTML = '';
+
+
+
+    const units = unitsList[buildingId] || [];
+
+    units.forEach(u => {
+
+      const unlocked = isUnlockedForTraining(buildingId) && isUnitUnlocked(u);
+
+      const div = document.createElement('div');
+
+      div.className = 'unit-card' + (unlocked ? '' : ' inactive');
+
+
+
+      const icon = document.createElement('div');
+
+      icon.className = 'icon';
+
+      icon.textContent = u.icon;
+
+
+
+      const details = document.createElement('div');
+
+      details.className = 'details';
+
+
+
+      const title = document.createElement('div');
+
+      title.className = 'title';
+
+      title.textContent = u.name;
+
+
+
+      const lvlReq = document.createElement('div');
+
+      lvlReq.textContent = `Vyžaduje level budovy: ${u.requiredBuildingLevel}`;
+
+
+
+      const stats = document.createElement('div');
+
+      stats.innerHTML = `
+
+        Útok: ${u.attack} | Obrana: ${u.defense} <br />
+
+        Obrana proti pěchotě: ${u.defInfantry} | Obrana proti koním: ${u.defCavalry} <br />
+
+        Spotřeba obilí: ${u.grainPerHour} / hodina <br />
+
+        Trénink trvá: ${u.trainingTime} min
+
+      `;
+
+
+
+      const count = document.createElement('div');
+
+      count.textContent = `Počet: ${armyData[u.id] || 0}`;
+
+
+
+      const btn = document.createElement('button');
+
+      btn.className = 'btn';
+
+      btn.textContent = unlocked ? 'Trénovat 1' : 'Uzamčeno';
+
+      btn.disabled = !unlocked || (trainingQueue[u.id] && trainingQueue[u.id].some(t => Date.now() < t.endTime));
+
+      btn.onclick = () => startTrainingUnit(u.id);
+
+
+
+      details.appendChild(title);
+
+      details.appendChild(lvlReq);
+
+      details.appendChild(stats);
+
+      details.appendChild(count);
+
+      details.appendChild(btn);
+
+
+
+      div.appendChild(icon);
+
+      div.appendChild(details);
+
+
+
+      container.appendChild(div);
+
+    });
+
+  }
+
+
+
+  // --- Začátek tréninku jednotky (1 kus) ---
+
+  function startTrainingUnit(unitId) {
+
+    const unit = Object.values(unitsList).flat().find(u => u.id === unitId);
+
+    if (!unit) return;
+
+
+
+    // Spotřeba obilí během tréninku
+
+    const grainNeeded = unit.grainPerHour / 60 * unit.trainingTime;
+
+    if (floatResources.grain < grainNeeded) {
+
+      alert("Nemáš dostatek obilí na trénink.");
+
+      return;
+
+    }
+
+
+
+    floatResources.grain -= grainNeeded;
+
+    updateResourcesDisplay();
+
+
+
+    if (!trainingQueue[unitId]) trainingQueue[unitId] = [];
+
+    const endTime = Date.now() + unit.trainingTime * 60 * 1000;
+
+    trainingQueue[unitId].push({ count: 1, endTime });
+
+
+
+    saveToStorage();
+
+    renderTraining(currentTab);
+
+  }
+
+
+
+  // --- Zpracování fronty tréninku ---
+
+  function processTrainingQueue() {
+
+    const now = Date.now();
+
+    let changed = false;
+
+    for (const unitId in trainingQueue) {
+
+      const queue = trainingQueue[unitId];
+
+      if (!queue) continue;
+
+      for (let i = queue.length - 1; i >= 0; i--) {
+
+        if (queue[i].endTime <= now) {
+
+          armyData[unitId] = (armyData[unitId] || 0) + queue[i].count;
+
+          queue.splice(i,1);
+
+          changed = true;
+
+        }
+
+      }
+
+      if (queue.length === 0) delete trainingQueue[unitId];
+
+    }
+
+    if (changed) {
+
+      saveToStorage();
+
+      renderTraining('barracks');
+
+      renderTraining('stable');
+
+      renderArmyList();
+
+    }
+
+  }
+
+
+
+  // --- Výzkum ---
+
+
+
+  function isResearchUnlocked(research) {
+
+    const building = buildingData[research.buildingId];
+
+    if (!building) return false;
+
+    return building.level >= research.buildingReq;
+
+  }
+
+
+
+  function renderResearch() {
+
+    const container = document.getElementById('research-list');
+
+    container.innerHTML = '';
+
+    researchList.forEach(r => {
+
+      const unlocked = isResearchUnlocked(r);
+
+      const researched = researchData[r.unlocksUnit] || false;
+
+      const inProgress = researchQueue[r.id] && researchQueue[r.id] > Date.now();
+
+
+
+      const div = document.createElement('div');
+
+      div.className = 'research-card' + (unlocked ? '' : ' inactive');
+
+
+
+      const icon = document.createElement('div');
+
+      icon.className = 'icon';
+
+      let unit = Object.values(unitsList).flat().find(u => u.id === r.unlocksUnit);
+
+      icon.textContent = unit ? unit.icon : '❓';
+
+
+
+      const details = document.createElement('div');
+
+      details.className = 'details';
+
+
+
+      const title = document.createElement('div');
+
+      title.className = 'title';
+
+      title.textContent = r.name;
+
+
+
+      const req = document.createElement('div');
+
+      req.textContent = `Vyžaduje: Akademie level ${r.buildingReq}`;
+
+
+
+      const status = document.createElement('div');
+
+      status.className = 'timer';
+
+
+
+      if (researched) {
+
+        status.textContent = 'Výzkum dokončen';
+
+      } else if (inProgress) {
+
+        status.textContent = 'Výzkum probíhá: ' + formatTime(researchQueue[r.id] - Date.now());
+
+      } else if (!unlocked) {
+
+        status.textContent = 'Zamčeno';
+
+      } else {
+
+        status.textContent = '';
+
+      }
+
+
+
+      const btn = document.createElement('button');
+
+      btn.className = 'btn';
+
+      btn.textContent = researched ? 'Dokončeno' : (inProgress ? 'Výzkum probíhá' : 'Začít výzkum');
+
+      btn.disabled = researched || inProgress || !unlocked;
+
+      btn.onclick = () => startResearch(r.id);
+
+
+
+      details.appendChild(title);
+
+      details.appendChild(req);
+
+      details.appendChild(status);
+
+      details.appendChild(btn);
+
+
+
+      div.appendChild(icon);
+
+      div.appendChild(details);
+
+
+
+      container.appendChild(div);
+
+    });
+
+  }
+
+
+
+  function startResearch(researchId) {
+
+    if (researchQueue[researchId] && researchQueue[researchId] > Date.now()) {
+
+      alert('Výzkum už probíhá.');
+
+      return;
+
+    }
+
+    const r = researchList.find(r => r.id === researchId);
+
+    if (!r) return;
+
+    const speed = getSpeedMultiplier();
+
+    const duration = (r.time * 60 * 1000) / speed;
+
+    researchQueue[researchId] = Date.now() + duration;
+
+    saveToStorage();
+
+    renderResearch();
+
+  }
+
+
+
+  function processResearchQueue() {
+
+    let changed = false;
+
+    const now = Date.now();
+
+    for (const researchId in researchQueue) {
+
+      const endTime = researchQueue[researchId];
+
+      if (endTime && endTime <= now) {
+
+        researchData[researchId] = true;
+
+        researchQueue[researchId] = null;
+
+        changed = true;
+
+      }
+
+    }
+
+    if (changed) {
+
+      saveToStorage();
+
+      renderResearch();
+
+      renderTraining('barracks');
+
+      renderTraining('stable');
+
+    }
+
+  }
+
+
+
+  // --- Shromaždiště (přehled armády) ---
+
+  function renderArmyList() {
+
+    const container = document.getElementById('army-list');
+
+    container.innerHTML = '';
+
+    const allUnits = Object.values(unitsList).flat();
+
+    allUnits.forEach(u => {
+
+      const count = armyData[u.id] || 0;
+
+      if (count === 0) return;
+
+      const div = document.createElement('div');
+
+      div.className = 'army-unit';
+
+
+
+      const icon = document.createElement('div');
+
+      icon.className = 'icon';
+
+      icon.textContent = u.icon;
+
+
+
+      const name = document.createElement('div');
+
+      name.textContent = u.name;
+
+
+
+      const countDiv = document.createElement('div');
+
+      countDiv.className = 'count';
+
+      countDiv.textContent = count;
+
+
+
+      div.appendChild(icon);
+
+      div.appendChild(name);
+
+      div.appendChild(countDiv);
+
+
+
+      container.appendChild(div);
+
+    });
+
+    if(container.innerHTML === '') {
+
+      container.textContent = 'Nemáte žádné vycvičené jednotky.';
+
+    }
+
+  }
+
+
+
+  // --- Tab switching ---
+
+
+
+  const tabs = document.querySelectorAll('#tabs button');
+
+  let currentTab = 'buildings';
+
+
+
+  tabs.forEach(tab => {
+
+    tab.addEventListener('click', () => {
+
+      tabs.forEach(t => t.classList.remove('active'));
+
+      tab.classList.add('active');
+
+      currentTab = tab.dataset.tab;
+
+      showTab(currentTab);
+
+    });
+
+  });
+
+
+
+  function showTab(tab) {
+
+    document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+
+    const el = document.getElementById('tab-' + tab);
+
+    if (el) el.style.display = 'block';
+
+
+
+    if(tab === 'buildings') renderBuildings();
+
+    if(tab === 'barracks') renderTraining('barracks');
+
+    if(tab === 'stable') renderTraining('stable');
+
+    if(tab === 'academy') renderResearch();
+
+    if(tab === 'rally') renderArmyList();
+
+  }
+
+
+
+  // --- Aktualizace časovačů, front, atd. ---
+
+  function updateTimers() {
+
+    const now = Date.now();
+
+
+
+    // Dokončení staveb budov
+
+    let buildingsChanged = false;
+
+    for (const id in buildingData) {
+
+      const b = buildingData[id];
+
+      if (b.upgrading && b.upgradeEnd <= now) {
+
+        b.level++;
+
+        b.upgrading = false;
+
+        b.upgradeEnd = null;
+
+      if (!b.built) b.built = true;
+
+      renderBuildings();
+
+        buildingsChanged = true;
+
+      }
+
+    }
+
+    if (buildingsChanged) {
+
+      saveToStorage();
+
+      if(currentTab==='buildings') renderBuildings();
+
+      updateResourcesDisplay();
+
+    }
+
+
+
+    // Výzkumy
+
+    processResearchQueue();
+
+
+
+    // Tréninky
+
+    processTrainingQueue();
+
+
+
+    // Aktualizace UI timerů dle aktuální záložky
+
+    if (currentTab === 'buildings') renderBuildings();
+
+    if (currentTab === 'barracks') renderTraining('barracks');
+
+    if (currentTab === 'stable') renderTraining('stable');
+
+    if (currentTab === 'academy') renderResearch();
+
+    if (currentTab === 'rally') renderArmyList();
+
+
+
+    updateTokensDisplay();
+
+  }
+
+
+
+  // --- Inicializace ---
+
+  function init() {
+
+    loadFromStorage();
+
+    updateResourcesDisplay();
+
+    updateTokensDisplay();
+
+    showTab(currentTab);
+
+
+
+    setInterval(() => {
+
+      updateTimers();
+
+    }, 1000);
+
+  }
+
+
+
+  init();
+
+
+
+
+
+function isUnlockedBuilding(id) {
+
+  if (id === 'granary' || id === 'warehouse') {
+
+    return buildingData.main && buildingData.main.level >= 3;
+
+  }
+
+  if (id === 'barracks') {
+
+    return buildingData.main && buildingData.main.level >= 5;
+
+  }
+
+  if (id === 'academy') {
+
+    return buildingData.barracks && buildingData.barracks.level >= 3;
+
+  }
+
+if (id === 'stable') {
+
+    return buildingData.barracks && buildingData.barracks.level >= 5;
+ 
+  
+
+}
+
+return true;
+
+} 
+
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
