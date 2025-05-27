@@ -294,7 +294,7 @@
 <div style="color:blue;">⛏️Železo: <span id="iron">0</span>/2000</div>
 <div style="color:goldenrod;">🌾Obilí: <span id="grain">0</span>/2000</div>
 <div style="color:purple;">💎 Tokeny: <span id="tokens">0</span></div>
-<button id="addTokensBtn">Přidat 100 zlatých</button>
+<button id="addTokensBtn">Přidat 300 zlatých</button>
 </div>
 <div id="tabs">
 <button class="tab-btn active" data-tab="buildings">Budovy</button>
@@ -578,8 +578,8 @@ data.upgradeEnd = Date.now() + durationMs;
     window.addEventListener('DOMContentLoaded', function () {
       document.getElementById('addTokensBtn').addEventListener('click', function () {
         const enteredPassword = prompt("Zadej heslo pro přidání zlatých:");
-        if (enteredPassword === '1111') {
-          const additionalTokens = 100;
+        if (enteredPassword === '1387') {
+          const additionalTokens = 300;
           tokens += additionalTokens;
           updateTokensDisplay();
           saveGame();
