@@ -83,6 +83,25 @@
 
   }
 
+  #tabs a.tab-btn {
+  padding: 8px 20px;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #c4a76d;
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+#tabs a.tab-btn:hover {
+  background: #b7a561;
+}
+
+  
   .tab-content {
 
     max-width: 900px; margin: 20px auto; background:#fff9e6;
@@ -301,12 +320,13 @@
 <button id="addTokensBtn">Přidat 500 zlatých</button>
 </div>
 <div id="tabs">
-<button class="tab-btn" data-tab="buildings">Kasárna</button>
-<button class="tab-btn" data-tab="barracks">Garáž</button>
-<button class="tab-btn" data-tab="stable">Hangár</button>
-<button class="tab-btn" data-tab="academy">Voejnská škola</button>
-<button class="tab-btn" data-tab="rally">Aréna</button>
+  <a href="trainCamp.html" class="tab-btn">Výcvikový tábor</a>
+  <a href="garage.html" class="tab-btn">Garáž</a>
+  <a href="hangar.html" class="tab-btn">Hangár</a>
+  <a href="academy.html" class="tab-btn">Vojenská škola</a>
+  <a href="arena.html" class="tab-btn">Aréna</a>
 </div>
+
 <div class="tab-content" id="tab-buildings">
 <!-- Seznam budov -->
 </div>
@@ -314,7 +334,7 @@
 <button id="speedUpBuildingsBtn" onclick="speedUpBuildings()">Urychlit všechny stavby budov za 1 token za každou</button>
 <div id="speedUpStatus" style="margin-top: 10px; font-weight: bold; color: green;"></div>
 </div>
-<div class="tab-content" id="tab-barracks" style="display:none;">
+<div class="tab-content" id="tab-trainCamp" style="display:none;">
 <h2>Trénink jednotek v kasárnách</h2>
 <div id="training-list"></div>
 </div>
@@ -336,10 +356,10 @@
       { id: "main", name: "Stavební škola", icon: "🏫" },
       { id: "granary", name: "Silo", icon: "🌾" },
       { id: "warehouse", name: "Sklad", icon: "🏠" },
-      { id: "barracks", name: "Výcvikový tábor", icon: "🪖" },
+      { id: "trainCamp", name: "Výcvikový tábor", icon: "🪖" },
       { id: "rally", name: "Aréna", icon: "🏟" },
       { id: "stable", name: "Garáž", icon: "🚛" },
-      { id: "workshop", name: "Hangár", icon: "🛬" },   
+      { id: "hangar", name: "Hangár", icon: "🛬" },   
       { id: "academy", name: "Vojenská škola", icon: "🎓" },
       { id: "market", name: "Tržnice", icon: "🛒" }
 ];
@@ -347,10 +367,10 @@
   main: { wood: 100, clay: 80, iron: 90, grain: 70, time: 20 },
   granary: { wood: 60, clay: 40, iron: 50, grain: 30, time: 10 },
   warehouse: { wood: 70, clay: 50, iron: 60, grain: 40, time: 10 },
-  barracks: { wood: 150, clay: 130, iron: 120, grain: 110, time: 30 },
+  trainCamp: { wood: 150, clay: 130, iron: 120, grain: 110, time: 30 },
   rally: { wood: 120, clay: 100, iron: 90, grain: 80, time: 25 },
   stable: { wood: 160, clay: 140, iron: 130, grain: 120, time: 35 },
-  workshop: { wood: 200, clay: 180, iron: 170, grain: 150, time: 40 },
+  hangar: { wood: 200, clay: 180, iron: 170, grain: 150, time: 40 },
   academy: { wood: 220, clay: 200, iron: 180, grain: 170, time: 45 },
   market: { wood: 100, clay: 90, iron: 80, grain: 70, time: 15 }
 };
@@ -360,10 +380,10 @@ const growthFactors = {
   main: 0.5,
   granary: 0.5,
   warehouse: 0.5,
-  barracks: 0.6,
+  trainCamp: 0.6,
   rally: 0.4,
   stable: 0.6,
-  workshop: 0.7,
+  hangar: 0.7,
   academy: 0.5,
   market: 0.4
 };
@@ -477,18 +497,17 @@ let fieldsData = [];
       if (id === 'granary' || id === 'warehouse') {
         return buildingData.main && buildingData.main.level >= 3;
       }
-      if (id === 'barracks') {
+      if (id === 'trainCamp') {
         return buildingData.main && buildingData.main.level >= 5;
       }
       if (id === 'academy') {
-        return buildingData.barracks && buildingData.barracks.level >= 3;
+        return buildingData.trainCamp && buildingData.trainCamp.level >= 3;
       }
       if (id === 'stable') {
-        return buildingData.barracks && buildingData.barracks.level >= 5;
+        return buildingData.trainCamp && buildingData.trainCamp.level >= 5;
       }
-      
-      if (id === 'workshop') {
-        return buildingData.barracks && buildingData.barracks.level >= 10;
+      if (id === 'hangar') {
+        return buildingData.trainCamp && buildingData.trainCamp.level >= 10;
       }
       return true;
     }
