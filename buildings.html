@@ -486,6 +486,10 @@ let fieldsData = [];
       if (id === 'stable') {
         return buildingData.barracks && buildingData.barracks.level >= 5;
       }
+      
+      if (id === 'workshop') {
+        return buildingData.barracks && buildingData.barracks.level >= 10;
+      }
       return true;
     }
     // ---- Building Rendering ----
