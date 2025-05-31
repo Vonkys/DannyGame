@@ -348,6 +348,7 @@
   8: 1000,
   9: 1200,
   10: 1600
+  11: 2000    
   
    };
     let resources = { wood: 3000, clay: 3000, iron: 3000, grain: 3000 };
@@ -371,12 +372,18 @@
       return `${min}:${sec.toString().padStart(2, "0")}`;
     }
 
-    function upgradeDuration(currentLevel) {
-      const targetLevel = currentLevel + 1;
-      if (targetLevel <= 1) return 0;
-      if (targetLevel >= 10) return 2 * 60 * 60 * 1000;
-      return 60 * 1000 + ((targetLevel - 2) / (10 - 2)) * (2 * 60 * 60 * 1000 - 60 * 1000);
-    }
+   function upgradeDuration(currentLevel) {
+  const targetLevel = currentLevel + 1;
+  if (targetLevel <= 1) return 0;
+
+  const maxDefinedLevel = 10;
+  const maxTime = 2 * 60 * 60 * 1000; // 2 hodiny
+  const minTime = 60 * 1000; // 1 minuta
+
+  if (targetLevel > maxDefinedLevel) return maxTime;
+
+  return minTime + ((targetLevel - 2) / (maxDefinedLevel - 2)) * (maxTime - minTime);
+}
 
     function saveGame() {
   localStorage.setItem("resources", JSON.stringify(floatResources));
